@@ -14,7 +14,8 @@ TensorFlow\* [Gather](https://www.tensorflow.org/api_docs/python/tf/gather) oper
        data[p_0, p_1, ..., p_{axis-1}, indices[p_0, p_1, ..., p_{b-1}, i_b, ..., i_{M-1}], p_{axis+1}, ..., p_{N-1}]
 
 Where `data`, `indices` and `axis` are tensors from first, second and third inputs correspondingly, `b` is 
-the number of batch dimensions. `N` and `M` are numbers of dimensions of `data` and `indices` tensors, respectively.
+the number of batch dimensions. `N` and `M` are numbers of dimensions of `data` and `indices` tensors, respectively. 
+The values for indices should in the range `[0, data.shape[axis] - 1]`. Output data for corresponding out of bound indices will be filled with zeros.
 
 **Attributes**:
 * *batch_dims*
@@ -132,12 +133,23 @@ output  = [[ 1, 1, 5],
 output_shape = (2, 3)
 ```
 
+Example 6 with negative indices:
+```
+batch_dims = 0
+axis = 0
+
+indices = [0, -2, -1] 
+data    = [1, 2, 3, 4, 5]
+output  = [1, 0, 0]
+```
+
 **Inputs**
 
 * **1**:  `data` tensor of type *T* with arbitrary data. **Required**.
 
-* **2**:  `indices` tensor of type *T_IND* with indices to gather. 0D tensor (scalar) for indices is also allowed. 
-  The values for indices are in the range `[0, data[axis] - 1]`.
+* **2**:  `indices` tensor of type *T_IND* with indices to gather. 0D tensor (scalar) for indices is also allowed.
+  The values for indices are in the range `[0, data.shape[axis] - 1]`.
+  Output data for corresponding out of bound indices will be filled with zeros.
   **Required**.
 
 * **3**:  Scalar or 1D tensor `axis` of *T_AXIS* type is a dimension index to gather data from. For example, 

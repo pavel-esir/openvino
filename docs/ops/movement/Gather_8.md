@@ -16,6 +16,10 @@ TensorFlow\* [Gather](https://www.tensorflow.org/api_docs/python/tf/gather) oper
 Where `data`, `indices` and `axis` are tensors from first, second and third inputs correspondingly, `b` is 
 the number of batch dimensions. `N` and `M` are numbers of dimensions of `data` and `indices` tensors, respectively.
 
+Depending on `wrap_indices ` attribute allowed values for indices are in the range `[-data.shape[axis], data.shape[axis] - 1]`, 
+if `wrap_type` is `true`, or `[0, data.shape[axis] - 1]`, otherwise. If negative indices are allowed they indicate 
+reverse indexing from `data.shape[axis]`. Output data for corresponding out of bound indices will be filled with zeros. 
+
 **Attributes**:
 * *batch_dims*
   * **Description**: *batch_dims* (also denoted as `b`) is a leading number of dimensions of `data` tensor and `indices` 
@@ -27,6 +31,15 @@ the number of batch dimensions. `N` and `M` are numbers of dimensions of `data` 
   * **Type**: *T_AXIS*
   * **Default value**: 0
   * **Required**: *no*
+
+* *wrap_indices*
+  * **Description**: If attribute is `true` then negative indices are allowed and negative
+    values indicate reverse indexing from the end. If `false` only positive indices are allowed. 
+  * **Range of values**: true or false
+  * **Type**: *BOOLEAN*
+  * **Default value**: true
+  * **Required**: *no*
+
 
 Example 1 with default *batch_dims* value:
 ```
@@ -56,7 +69,27 @@ output  = [[ 1, 1, 5],
 output_shape = (2, 3)
 ```
 
-Example 3 with non-default *batch_dims* value:
+Example 3 with negative indices:
+```
+batch_dims = 0
+axis = 0
+
+indices = [0, -2, -1] 
+data    = [1, 2, 3, 4, 5]
+output  = [1, 4, 5]
+```
+
+Example 4 with negative indices when `wrap_indices` is `false`:
+```
+batch_dims = 0
+axis = 0
+
+indices = [0, -2, -1] 
+data    = [1, 2, 3, 4, 5]
+output  = [1, 0, 0]
+```
+
+Example 5 with non-default *batch_dims* value:
 ```
 batch_dims = 2
 axis = 2
@@ -82,7 +115,7 @@ output  = [[[ 1, 1, 5],
             [20, 19, 18]]] 
 output_shape = (2, 2, 3)
 ```
-Example 4 with *axis* > *batch_dims*:
+Example 6 with *axis* > *batch_dims*:
 ```
 batch_dims = 1
 axis = 2
@@ -114,7 +147,7 @@ output = [[[[ 5,  6,  7,  8],
 output_shape = (2, 1, 3, 4)
 ```
 
-Example 5 with negative *batch_dims* value:
+Example 7 with negative *batch_dims* value:
 ```
 batch_dims = -1  <-- normalized value will be indices.rank + batch_dims = 2 - 1 = 1
 axis = 1
@@ -132,23 +165,14 @@ output  = [[ 1, 1, 5],
 output_shape = (2, 3)
 ```
 
-Example 6 with negative indices:
-```
-batch_dims = 0
-axis = 0
-
-indices = [0, -2, -1] 
-data    = [1, 2, 3, 4, 5]
-output  = [1, 4, 5]
-```
-
 **Inputs**
 
 * **1**:  `data` tensor of type *T* with arbitrary data. **Required**.
 
 * **2**:  `indices` tensor of type *T_IND* with indices to gather. 0D tensor (scalar) for indices is also allowed. 
-  The values for indices are in the range `[-data[axis], data[axis] - 1]`.
-  Negative values of indices indicate reverse indexing from `data[axis]`. 
+  The values for indices are in the range `[-data.shape[axis], data.shape[axis] - 1]` if `wrap_indices ` is `true` otherwise
+  the range is `[0, data.shape[axis] - 1]`. Output data for corresponding out of bound indices will be filled with zeros. 
+  Negative values of indices indicate reverse indexing from `data.shape[axis]`. 
   **Required**.
 
 * **3**:  Scalar or 1D tensor `axis` of *T_AXIS* type is a dimension index to gather data from. For example, 

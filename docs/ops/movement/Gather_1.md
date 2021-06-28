@@ -19,7 +19,8 @@ Where `axis` is the value from the third input.
 
 * **1**:  Tensor with arbitrary data. Required.
 
-* **2**:  Tensor with indices to gather. The values for indices are in the range `[0, input1[axis] - 1]`. Required.
+* **2**:  Tensor with indices to gather. The values for indices are in the range `[0, input1.shape[axis] - 1]`. Output data 
+  for corresponding out of bound indices will be filled with zeros. Required.
 
 * **3**:  Scalar or 1D tensor *axis* is a dimension index to gather data from. For example, *axis* equal to 1 means that gathering is performed over the first dimension. Negative value means reverse indexing. Allowed values are from `[-len(input1.shape), len(input1.shape) - 1]`. Required.
 
