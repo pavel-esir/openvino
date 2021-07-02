@@ -116,7 +116,10 @@ void MKLDNNGatherNode::execute(mkldnn::stream strm) {
     uint8_t* dstData = reinterpret_cast<uint8_t*>(getChildEdgeAt(0)->getMemoryPtr()->GetPtr());
 
     parallel_for2d(batchSize, idxBatchStride, [&](const size_t i, const size_t j) {
-        const unsigned int idx = static_cast<uint32_t>(srcIndexes[i * idxBatchStride + j]);
+        int32_t index = srcIndexes[i * idxBatchStride + j];
+        index = index >= 0 ? index : index + indexRange;
+
+        const unsigned int idx = static_cast<uint32_t>(index);
 
         // while negative indices are not supported, should set zero
         if (idx < indexRange) {
