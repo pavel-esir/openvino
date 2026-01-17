@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "args": "^5.0.3",
-    "canvas": "^2.11.2",
+    "canvas": "^3.2.1",
     "eslint": "^8.39.0",
     "https-proxy-agent": "^7.0.2",
     "opencv-wasm": "^4.3.0-10",
